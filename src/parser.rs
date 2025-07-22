@@ -6,13 +6,7 @@ use std::slice::Iter;
 pub struct Parser<'a> {
     iter: Peekable<Iter<'a, Token>>,
 }
-/*
- Extended Backus-Naur Form Grammar
-    <S> ::= <D> ("and" <D>)*
-    <D> ::= <E> | "!" <E>
-    <E> ::= <v> | "(" <S> ")"
-    <v> ::= "x" | "y"
-*/
+
 impl<'a> Parser<'a> {
     pub fn new(iter: Peekable<Iter<'a, Token>>) -> Self {
         return Parser { iter };
@@ -38,11 +32,12 @@ impl<'a> Parser<'a> {
             }
             Token::LeftParen => {
                 self.iter.next();
-                // let innerExpr = self.S()?;
-                let innerExpr = self.S();
-                self.expect(Token::RightParen);
-                return innerExpr;
-                // Ok(innerExpr)
+                let inner_expr = self.S();
+
+                if let Err(s) = self.expect(Token::RightParen) {
+                    return Err(s);
+                }
+                return inner_expr;
             }
             _ => return Err(format!("Unexpected token in E block: {:?}", next)),
         }
