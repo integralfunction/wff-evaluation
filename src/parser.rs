@@ -79,7 +79,7 @@ impl<'a> Parser<'a> {
 
         return node;
     }
-    fn S(&mut self) -> Node {
+    fn B(&mut self) -> Node {
         let mut node = self.C();
         loop {
             let next = self.iter.peek().unwrap();
@@ -98,9 +98,51 @@ impl<'a> Parser<'a> {
                 }
             }
         }
-
         return node;
     }
+    fn A(&mut self) -> Node {
+        let mut node = self.B();
+        loop {
+            let next = self.iter.peek().unwrap();
+            // println!("next: {:#?}", next);
+            match *next {
+                Token::If => {
+                    self.iter.next();
+                    node = Node::BinaryExpr {
+                        op: BinaryOperator::If { symbol: '⇒' },
+                        lhs: Box::new(node),
+                        rhs: Box::new(self.B()),
+                    };
+                }
+                _ => {
+                    break;
+                }
+            }
+        }
+        return node;
+    }
+    fn S(&mut self) -> Node {
+        let mut node = self.A();
+        loop {
+            let next = self.iter.peek().unwrap();
+            // println!("next: {:#?}", next);
+            match *next {
+                Token::Iff => {
+                    self.iter.next();
+                    node = Node::BinaryExpr {
+                        op: BinaryOperator::Iff { symbol: '⇔' },
+                        lhs: Box::new(node),
+                        rhs: Box::new(self.A()),
+                    };
+                }
+                _ => {
+                    break;
+                }
+            }
+        }
+        return node;
+    }
+
     pub fn parse(&mut self) -> Node {
         let ast = self.S();
         return ast;

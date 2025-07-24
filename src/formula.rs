@@ -111,7 +111,10 @@ impl Formula {
 
     pub fn tokenize(&mut self) -> Result<Vec<Token>, String> {
         let mut tokens: Vec<Token> = vec![];
-        let x = Self::split_by_symbols(self.rawstring.clone(), vec!["(", ")", "&&", "!", "||"]);
+        let x = Self::split_by_symbols(
+            self.rawstring.clone(),
+            vec!["(", ")", "&&", "!", "||", "=>", "<=>"],
+        );
         for thing in x {
             // println!("{}", char);
             match thing.as_str() {
@@ -120,6 +123,8 @@ impl Formula {
                 "&&" => tokens.push(Token::And),
                 "||" => tokens.push(Token::Or),
                 "!" => tokens.push(Token::Not),
+                "=>" => tokens.push(Token::If),
+                "<=>" => tokens.push(Token::Iff),
                 ch if ch.chars().all(char::is_alphabetic) => {
                     tokens.push(Token::Term(ch.chars().next().unwrap()));
                 }

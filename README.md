@@ -1,5 +1,3 @@
-TODO: proper error handling
-
 Extended Backus-Naur Form Grammar
 
 ```
@@ -12,7 +10,7 @@ Extended Backus-Naur Form Grammar
 <v> ::= "x" | "y"
 ```
 
-Operator Precedence
+[Operator Precedence](http://logic.stanford.edu/intrologic/dictionary/operator_precedence.html)
 
 ```
 ¬   <-- highest precedence
@@ -22,3 +20,9 @@ Operator Precedence
 ⇔   <-- lowest precedence
 ```
 
+TODO: proper error handling
+
+Build instructions:
+```
+cargo build
+```

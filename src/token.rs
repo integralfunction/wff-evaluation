@@ -6,7 +6,7 @@ pub enum Token {
     Not,
     And,
     Or,
-    // If,
-    // Iff,
+    If,
+    Iff,
     End,
 }
