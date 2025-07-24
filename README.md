@@ -1,3 +1,8 @@
+# Demo
+<p align="center">
+    <img src="demo.gif" width="512">
+</p>
+
 Extended Backus-Naur Form Grammar
 
 ```
