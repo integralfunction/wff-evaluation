@@ -4,6 +4,12 @@ pub enum BinaryOperator {
     Or { symbol: char },
 }
 impl BinaryOperator {
+    pub fn symbol(&self) -> char {
+        match *self {
+            Self::And { symbol } => symbol,
+            Self::Or { symbol } => symbol,
+        }
+    }
     pub fn eval(&self, x: bool, y: bool) -> bool {
         match self {
             Self::And { symbol: _ } => x && y,
@@ -17,6 +23,11 @@ pub enum UnaryOperator {
     Not { symbol: char },
 }
 impl UnaryOperator {
+    pub fn symbol(&self) -> char {
+        match *self {
+            Self::Not { symbol } => symbol,
+        }
+    }
     pub fn eval(&self, x: bool) -> bool {
         match self {
             Self::Not { symbol: _ } => !x,

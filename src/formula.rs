@@ -2,7 +2,6 @@
 
 use crate::Token;
 use crate::term::Term;
-// use crate::{Token, unicode_split};
 
 #[derive(Debug)]
 pub struct Formula {
@@ -10,39 +9,62 @@ pub struct Formula {
     pub terms: Vec<Term>,
 }
 
-impl From<&str> for Formula {
-    fn from(rawstr: &str) -> Formula {
-        return Formula {
-            rawstring: rawstr.trim().split(' ').collect::<Vec<&str>>().join(""),
-            terms: Formula::get_all_terms_initially(
-                rawstr.trim().split(' ').collect::<Vec<&str>>().join(""),
-            ),
-        };
-    }
-}
-
-impl From<String> for Formula {
-    fn from(rawstr: String) -> Formula {
-        return Formula {
-            rawstring: rawstr.trim().split(' ').collect::<Vec<&str>>().join(""),
-            terms: Formula::get_all_terms_initially(
-                rawstr.trim().split(' ').collect::<Vec<&str>>().join(""),
-            ),
-        };
-    }
-}
-
 impl Formula {
+    pub fn new(rawstr: String) -> Self {
+        let x = rawstr.trim().split(' ').collect::<Vec<&str>>().join("");
+        return Formula {
+            rawstring: x.clone(),
+            terms: Formula::get_all_terms_initially(x),
+        };
+    }
+
+    pub fn split_by_symbols(source: String, pat: Vec<&str>) -> Vec<String> {
+        let mut result: Vec<String> = vec![];
+        let arr = source.chars().collect::<Vec<char>>();
+        // println!("len: {:?}", arr.len());
+        // println!("arr: {:?}", arr);
+        let mut index = 0;
+        while index < arr.len() {
+            let character = arr[index];
+            let mut pad = 0;
+
+            // TODO: Instead of matching [a-z] as terms, we should have an option to make
+            // it only a subset, for example [p-t]
+            if character.is_alphabetic() {
+                result.push(character.to_string());
+                index += 1;
+                continue;
+            }
+
+            loop {
+                let c = &arr[index..index + pad + 1];
+                let d = c.iter().collect::<String>();
+                // println!("c: {:?}", c);
+                if !pat.contains(&d.as_str()) {
+                    pad += 1;
+                } else {
+                    result.push(d);
+                    index += 1 + pad;
+                    break;
+                }
+            }
+        }
+        // println!("split_by_symbols {:#?}", result);
+        return result;
+    }
+
     fn get_all_terms_initially(rawstring: String) -> Vec<Term> {
         let mut all_terms: Vec<Term> = vec![];
-        for char in rawstring.chars() {
-            match char {
-                ch if char.is_alphabetic() => {
-                    let x = all_terms.iter().find(|&term| term.symbol == ch);
+        let x = Self::split_by_symbols(rawstring, vec!["(", ")", "&&", "!", "||"]);
+        for thing in x {
+            match thing {
+                ch if ch.chars().all(char::is_alphabetic) => {
+                    let y = ch.chars().next().unwrap();
+                    let x = all_terms.iter().find(|&term| term.symbol == y);
                     match x {
                         None => {
                             all_terms.push(Term {
-                                symbol: ch,
+                                symbol: y,
                                 value: true,
                             });
                         }
@@ -52,6 +74,7 @@ impl Formula {
                 _ => {}
             }
         }
+        // dbg!(&all_terms);
         return all_terms;
     }
 
@@ -90,16 +113,17 @@ impl Formula {
 
     pub fn tokenize(&mut self) -> Result<Vec<Token>, String> {
         let mut tokens: Vec<Token> = vec![];
-        for char in self.rawstring.chars() {
+        let x = Self::split_by_symbols(self.rawstring.clone(), vec!["(", ")", "&&", "!", "||"]);
+        for thing in x {
             // println!("{}", char);
-            match char {
-                '(' => tokens.push(Token::LeftParen),
-                ')' => tokens.push(Token::RightParen),
-                '∧' => tokens.push(Token::And),
-                '∨' => tokens.push(Token::Or),
-                '¬' => tokens.push(Token::Not),
-                ch if char.is_alphabetic() => {
-                    tokens.push(Token::Term(ch));
+            match thing.as_str() {
+                "(" => tokens.push(Token::LeftParen),
+                ")" => tokens.push(Token::RightParen),
+                "&&" => tokens.push(Token::And),
+                "||" => tokens.push(Token::Or),
+                "!" => tokens.push(Token::Not),
+                ch if ch.chars().all(char::is_alphabetic) => {
+                    tokens.push(Token::Term(ch.chars().next().unwrap()));
                 }
                 _ => return Err(String::from("Symbol not in notation")),
             }

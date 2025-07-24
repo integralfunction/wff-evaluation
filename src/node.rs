@@ -1,5 +1,6 @@
 use crate::formula::Formula;
 use crate::operators::{BinaryOperator, UnaryOperator};
+use std::fmt;
 
 #[derive(Debug)]
 pub enum Node {
@@ -13,6 +14,38 @@ pub enum Node {
         lhs: Box<Node>,
         rhs: Box<Node>,
     },
+}
+
+impl fmt::Display for Node {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match *self {
+            Node::Leaf(symbol) => write!(f, "{}", symbol),
+            Node::UnaryExpr { ref op, ref child } => {
+                write!(f, "({}", op.symbol())?;
+                if let Err(s) = child.fmt(f) {
+                    return Err(s);
+                }
+                write!(f, ")")?;
+                return Ok(());
+            }
+            Node::BinaryExpr {
+                ref op,
+                ref lhs,
+                ref rhs,
+            } => {
+                write!(f, "(")?;
+                if let Err(s) = lhs.fmt(f) {
+                    return Err(s);
+                };
+                write!(f, "{}", op.symbol())?;
+                if let Err(s) = rhs.fmt(f) {
+                    return Err(s);
+                };
+                write!(f, ")")?;
+                return Ok(());
+            }
+        }
+    }
 }
 
 impl Node {

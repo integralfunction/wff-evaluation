@@ -36,7 +36,7 @@ impl<'a> Parser<'a> {
                 self.expect(Token::RightParen);
                 return inner_expr;
             }
-            _ => return panic!("Unexpected token in E block: {:?}", next),
+            _ => panic!("Unexpected token in E block: {:?}", next),
         }
     }
 
@@ -46,7 +46,7 @@ impl<'a> Parser<'a> {
         match *next {
             Token::Not => {
                 self.iter.next();
-                let node = self.E();
+                let node = self.D();
                 return Node::UnaryExpr {
                     op: UnaryOperator::Not { symbol: '¬' },
                     child: Box::new(node),
