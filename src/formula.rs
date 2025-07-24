@@ -1,5 +1,3 @@
-// use unicode_segmentation::UnicodeSegmentation;
-
 use crate::Token;
 use crate::term::Term;
 
@@ -55,16 +53,14 @@ impl Formula {
 
     fn get_all_terms_initially(rawstring: String) -> Vec<Term> {
         let mut all_terms: Vec<Term> = vec![];
-        let x = Self::split_by_symbols(rawstring, vec!["(", ")", "&&", "!", "||"]);
-        for thing in x {
-            match thing {
-                ch if ch.chars().all(char::is_alphabetic) => {
-                    let y = ch.chars().next().unwrap();
-                    let x = all_terms.iter().find(|&term| term.symbol == y);
+        for char in rawstring.chars() {
+            match char {
+                ch if char.is_alphabetic() => {
+                    let x = all_terms.iter().find(|&term| term.symbol == ch);
                     match x {
                         None => {
                             all_terms.push(Term {
-                                symbol: y,
+                                symbol: ch,
                                 value: true,
                             });
                         }
@@ -74,6 +70,25 @@ impl Formula {
                 _ => {}
             }
         }
+        // let x = Self::split_by_symbols(rawstring, vec!["(", ")", "&&", "!", "||"]);
+        // for thing in x {
+        //     match thing {
+        //         ch if ch.chars().all(char::is_alphabetic) => {
+        //             let y = ch.chars().next().unwrap();
+        //             let x = all_terms.iter().find(|&term| term.symbol == y);
+        //             match x {
+        //                 None => {
+        //                     all_terms.push(Term {
+        //                         symbol: y,
+        //                         value: true,
+        //                     });
+        //                 }
+        //                 Some(_) => {}
+        //             }
+        //         }
+        //         _ => {}
+        //     }
+        // }
         // dbg!(&all_terms);
         return all_terms;
     }
@@ -93,23 +108,6 @@ impl Formula {
             (term).set_value(truth_values[index]);
         }
     }
-    // pub fn add_term(&mut self, t: Term) -> &Term {
-    //     self.terms.push(t);
-    //     return &self.terms.last().unwrap();
-    // }
-    // fn add_term(terms: &mut Vec<Term>, t: Term) -> &Term {
-    //     terms.push(t);
-    //     return terms.last().unwrap();
-    // }
-    // pub fn get_term(&self, c: char) -> Result<&Term, String> {
-    //     // for t in self.terms.as_slice() {
-    //     for t in self.terms.borrow_mut().as_slice() {
-    //         if t.symbol == c {
-    //             return Ok(t);
-    //         }
-    //     }
-    //     return Err(format!("Can't find"));
-    // }
 
     pub fn tokenize(&mut self) -> Result<Vec<Token>, String> {
         let mut tokens: Vec<Token> = vec![];
@@ -131,12 +129,6 @@ impl Formula {
         tokens.push(Token::End);
         return Ok(tokens);
     }
-    // pub fn all_terms(rawstr: &str) -> Vec<Term> {
-    //     return vec![Term {
-    //         symbol: 'p',
-    //         value: true,
-    //     }];
-    // }
     // pub fn main_connective(&self) -> Result<(Connective, usize), &str> {
     //     let mut stack: Vec<char> = vec![];
     //     // println!("{:#?}", self.rawstring.chars());
@@ -182,55 +174,5 @@ impl Formula {
     //         // println!("POST char rn: {:?}", char);
     //     }
     //     return conn;
-    // }
-
-    // pub fn remove_soft_parenthesis(rawstr: &str) -> &str {
-    //     let arr = unicode_split(rawstr);
-    //     let output_string = String::from("");
-    //     if (arr[0] != "(") {
-    //         return rawstr;
-    //     }
-    //     let mut stack: Vec<&str> = vec!["("];
-    //     for (pos, char) in arr.iter().enumerate() {
-    //         if pos == 0 {
-    //             continue;
-    //         }
-    //         match *char {
-    //             "(" => stack.push(*char),
-    //             ")" => {
-    //                 stack.pop();
-    //             }
-    //             _ => {}
-    //         }
-    //     }
-    //     return "";
-    // }
-    // pub fn remove_first_last(&mut self) -> &mut Self {
-    //     let mut arr = unicode_split(&self.rawstring);
-    //     arr.pop();
-    //     arr = arr.split_first_mut().unwrap().1.to_vec();
-    //     // println!("{:#?}", &arr);
-    //     self.rawstring = arr.join("");
-    //     return self;
-    // }
-    // pub fn left(&self) -> Formula {
-    //     let (_, pos) = self.main_connective().unwrap();
-
-    //     // let sa = &self.rawstring.chars().collect::<Vec<char>>();
-    //     // let splt = (&sa[0..pos]).iter().collect::<String>();
-
-    //     let arr = unicode_split(&self.rawstring);
-    //     let splt = (&arr[0..pos]).join("");
-    //     return Formula::from(splt.as_str());
-    // }
-    // pub fn right(&self) -> Formula {
-    //     let (_, pos) = self.main_connective().unwrap();
-
-    //     // let arr = &self.rawstring.graphemes(true).collect::<Vec<&str>>();
-    //     // let splt = (&arr[(pos + 1)..arr.len()]).join("");
-
-    //     let arr = unicode_split(&self.rawstring);
-    //     let substring = (&arr[(pos + 1)..arr.len()]).join("");
-    //     return Formula::from(substring.as_str());
     // }
 }

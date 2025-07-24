@@ -31,7 +31,7 @@ fn main() {
     let token_iter: Peekable<Iter<'_, Token>> = tokens.iter().peekable();
     let mut parser = parser::Parser::new(token_iter);
     let ast = Box::new(parser.parse());
-    println!("{:#?}", ast);
+    // println!("{:#?}", ast);
     let number_of_terms = s.get_all_terms().len();
     // const BASE: usize = 2;
     // let mut b = Builder::with_capacity(BASE.pow(number_of_terms.try_into().unwrap()), 1);

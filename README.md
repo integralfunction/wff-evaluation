@@ -1,3 +1,5 @@
+TODO: proper error handling
+
 Extended Backus-Naur Form Grammar
 
 ```
@@ -5,8 +7,18 @@ Extended Backus-Naur Form Grammar
 <A> ::= <B> (" if " <B>)*
 <B> ::= <C> (" or " <C>)*
 <C> ::= <D> (" and " <D>)*
-<D> ::= <E> | "!" <E>
+<D> ::= <E> | "not" <E>
 <E> ::= <v> | "(" <S> ")"
 <v> ::= "x" | "y"
+```
+
+Operator Precedence
+
+```
+¬   <-- highest precedence
+∧
+∨
+⇒
+⇔   <-- lowest precedence
 ```
 
